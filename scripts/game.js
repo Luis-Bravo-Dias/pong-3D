@@ -12,6 +12,20 @@ renderer.setSize(WIDTH, HEIGHT);
 var c = document.getElementById("gameCanvas");
 c.appendChild(renderer.domElement);
 
+camera = new THREE.PerspectiveCamera(
+    VIEW_ANGLE,
+    ASPECT,
+    NEAR,
+    FAR);
+
+scene = new THREE.Scene();
+
+//add the camera to the scene
+scene.add(camera);
+
+//set a default position for the camera
+camera.postion.z = 320;
+
 function setup()
 {
     draw();
