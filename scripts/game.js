@@ -1,3 +1,5 @@
+//import { PointLight } from "./three.module.min";
+
 //set the scene size
 var WIDTH = 640;
 HEIGHT = 360;
@@ -13,10 +15,11 @@ var c = document.getElementById("gameCanvas");
 c.appendChild(renderer.domElement);
 
 camera = new THREE.PerspectiveCamera(
-    VIEW_ANGLE,
-    ASPECT,
-    NEAR,
-    FAR);
+    //VIEW_ANGLE,
+    //ASPECT,
+   // NEAR,
+    //FAR
+);
 
 scene = new THREE.Scene();
 
@@ -24,7 +27,55 @@ scene = new THREE.Scene();
 scene.add(camera);
 
 //set a default position for the camera
-camera.postion.z = 320;
+camera.position.z = 320;
+
+//sphere
+var radius = 5,
+segments = 6,
+rings = 6;
+
+var sphereMaterial =
+new THREE.MeshLambertMaterial(
+    {
+        color: 0xD43001
+    }
+);
+
+var ball = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, segments, rings),
+    sphereMaterial);
+
+scene.add(ball);
+
+//POINT OF LIGHT
+var pointLight = new THREE.PointLight(0xF8D898);
+
+pointLight.position.x = -1000;
+pointLight.position.y = 0;
+pointLight.position.z = 1000;
+pointLight.intensity = 2.9;
+pointLight.distance = 10000;
+
+scene.add(pointLight);
+
+//PLANE
+var planeMaterial =
+new THREE.MeshLambertMaterial(
+   { color: 0x4BD121}
+);
+
+//ERROR HERE
+var plane = new THREE.Mesh(
+
+	  new THREE.PlaneGeometry(
+		planeWidth * 0.95,
+		planeHeight,
+		planeQuality,
+		planeQuality),
+
+	  planeMaterial);
+
+scene.add(plane);
 
 function setup()
 {
