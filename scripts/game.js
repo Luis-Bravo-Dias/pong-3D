@@ -43,6 +43,10 @@ var ball = new THREE.Mesh(
 
 scene.add(ball);
 
+var ballDirX = 1,
+ballDirY = 1,
+ballSpeed = 2;
+
 // POINT OF LIGHT
 var pointLight = new THREE.PointLight(0xF8D898);
 
@@ -127,6 +131,10 @@ paddle2.position.x = planeWidth / 2 - paddleWidth;
 paddle1.position.z = paddleDepth / 2;
 paddle2.position.z = paddleDepth / 2;
 
+var paddle1DirY = 0,
+paddle2DirY = 0,
+paddleSpeed = 3;
+
 function setup() {
     draw();
 }
@@ -137,10 +145,66 @@ function draw() {
 
     // loop the draw() function
     requestAnimationFrame(draw);
+
+   ballPhysics();
+    paddlePlay1();
+    cameraWork();
+}
+
+function ballPhysics()
+{
+    //BALL BOUNCING
+    if (ball.position.y <= planeHeight/2) //Top side of table
+        ballDirY = -ballDirY;
+    if (ball.position.y >= planeHeight/2) //bottom side of table
+        ballDirY = -ballDirY;
+
+    ball.position.x += ballDirX * ballSpeed;
+    ball.position.y += ballDirY * ballSpeed;
+
+    //BALL LIMITS
+    if (ballDirY > ballSpeed * 2)
+    ballDirY = ballSpeed * 2;
+    else if (ballDirY < -ballSpeed * 2)
+    ballDirY = -ballSpeed * 2;
+}
+
+function cameraWork()
+{
     camera.position.x = paddle1.position.x - 100;
     camera.position.z = paddle1.position.z + 100;
     camera.rotation.z = -90 * Math.PI/180;
     camera.rotation.y = -60 * Math.PI/180;
+}
 
-    // process game logic
+function paddlePlay1()
+{
+    //left
+    if (Key.isDown(Key.A))
+    {
+        if (paddle1.position.y < planeHeight * 0.45)//not touching the side of the table
+            paddle1DirY = paddleSpeed * 0.5;
+        else
+        {
+            paddle1DirY = 0;
+            paddle1.scale.z += (10 - paddle1.scale.z) * 0.2;
+        }
+    }
+    //right
+    else if (Key.isDown(Key.D))
+    {
+        if(paddle1.position.y > -planeHeight * 0.45)
+            paddle1DirY = -paddleSpeed * 0.5;
+        else
+        {
+            paddle1DirY = 0;
+            paddle1.scale.z += (10 - paddle1.scale.z) * 0.2;
+        }
+    }
+    else
+        paddle1DirY = 0;
+
+    paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;
+    paddle1.scale.z += (1 - paddle1.scale.z) * 0.2;
+    paddle1.position.y += paddle1DirY;
 }
