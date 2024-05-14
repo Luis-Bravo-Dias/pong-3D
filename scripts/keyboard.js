@@ -9,13 +9,17 @@ var Key = {
   D: 68,
   S: 83,
   SPACE: 32,
-  
+  M: 77,
+  RIGHT: 39,
+  LEFT: 37,
+
   isDown: function(keyCode) {
     return this._pressed[keyCode];
   },
   
   onKeydown: function(event) {
     this._pressed[event.keyCode] = true;
+    console.log("Key pressed: " + event.key + ", Keycode: " + event.keyCode);
   },
   
   onKeyup: function(event) {

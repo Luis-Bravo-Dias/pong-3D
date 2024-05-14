@@ -5,6 +5,7 @@ var WIDTH = 640;
 var HEIGHT = 360;
 
 var is3D = false;
+var multiPlay = false;
 
 // create a WebGL renderer, camera and a scene
 var renderer = new THREE.WebGLRenderer();
@@ -145,12 +146,12 @@ var keyPressed = false;
 
 function switchMode()
 {
-    if (Key.isDown(Key.W) && !keyPressed)
+    if (Key.isDown(Key.SPACE) && !keyPressed)
     {
         is3D = !is3D;
         keyPressed = true;
     }
-    else if (!Key.isDown(Key.W))
+    else if (!Key.isDown(Key.SPACE))
     {
         keyPressed = false;
     }
@@ -167,6 +168,7 @@ function draw() {
     
     ballPhysics();
     paddlePlay1();
+    paddlePlay2();
 
     if (is3D)
         cameraWork3D();
@@ -238,4 +240,36 @@ function paddlePlay1()
     paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;
     paddle1.scale.z += (1 - paddle1.scale.z) * 0.2;
     paddle1.position.y += paddle1DirY;
+}
+
+function paddlePlay2()
+{
+    //left
+    if (Key.isDown(Key.LEFT))
+    {
+        if (paddle2.position.y < planeHeight * 0.45)//not touching the side of the table
+            paddle2DirY = paddleSpeed * 0.5;
+        else
+        {
+            paddle2DirY = 0;
+            paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
+        }
+    }
+    //right
+    else if (Key.isDown(Key.RIGHT))
+    {
+        if(paddle2.position.y > -planeHeight * 0.45)
+            paddle2DirY = -paddleSpeed * 0.5;
+        else
+        {
+            paddle2DirY = 0;
+            paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
+        }
+    }
+    else
+        paddle2DirY = 0;
+
+    paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
+    paddle2.scale.z += (1 - paddle2.scale.z) * 0.2;
+    paddle2.position.y += paddle2DirY;
 }
