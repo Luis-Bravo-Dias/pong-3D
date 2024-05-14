@@ -5,7 +5,10 @@ var WIDTH = 640;
 var HEIGHT = 360;
 
 var is3D = false;
-var multiPlay = false;
+var multiPlay = true;
+
+//0 - easiest, 1 - hardest
+var difficulty = 0.2; 
 
 // create a WebGL renderer, camera and a scene
 var renderer = new THREE.WebGLRenderer();
@@ -143,6 +146,7 @@ function setup() {
 }
 
 var keyPressed = false;
+var multiPressed = false;
 
 function switchMode()
 {
@@ -154,6 +158,16 @@ function switchMode()
     else if (!Key.isDown(Key.SPACE))
     {
         keyPressed = false;
+    }
+
+    if (Key.isDown(Key.M) && !multiPressed)
+    {
+        multiPlay = !multiPlay;
+        multiPressed = true;
+    }
+    else if (!Key.isDown(Key.M))
+    {
+        multiPressed = false;
     }
 }
 
@@ -168,7 +182,10 @@ function draw() {
     
     ballPhysics();
     paddlePlay1();
-    paddlePlay2();
+    if (multiPlay)
+        paddlePlay2();
+    else
+        botPlay();
 
     if (is3D)
         cameraWork3D();
@@ -272,4 +289,21 @@ function paddlePlay2()
     paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
     paddle2.scale.z += (1 - paddle2.scale.z) * 0.2;
     paddle2.position.y += paddle2DirY;
+}
+
+function botPlay()
+{
+    paddle2DirY = (ball.position.y - paddle2.position.y) * difficulty;
+    //speed limit
+    if (Math.abs(paddle2DirY) <= paddleSpeed)
+        paddle2.position.y += paddle2DirY;
+    else
+    {
+        if (paddle2DirY > paddleSpeed)
+            paddle2.position.y += paddleSpeed;
+        else if (paddle2DirY < -paddleSpeed)
+            paddle2.position.y -= paddleSpeed;
+    }
+    //strech paddle when hits the end of the table
+    paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
 }
