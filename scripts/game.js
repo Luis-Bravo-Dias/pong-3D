@@ -4,6 +4,8 @@
 var WIDTH = 640;
 var HEIGHT = 360;
 
+var is3D = false;
+
 // create a WebGL renderer, camera and a scene
 var renderer = new THREE.WebGLRenderer();
 
@@ -139,16 +141,37 @@ function setup() {
     draw();
 }
 
+var keyPressed = false;
+
+function switchMode()
+{
+    if (Key.isDown(Key.W) && !keyPressed)
+    {
+        is3D = !is3D;
+        keyPressed = true;
+    }
+    else if (!Key.isDown(Key.W))
+    {
+        keyPressed = false;
+    }
+}
+
 function draw() {
+    
+    switchMode();
     // draw THREE.JS scene
     renderer.render(scene, camera);
 
     // loop the draw() function
     requestAnimationFrame(draw);
-
-   ballPhysics();
+    
+    ballPhysics();
     paddlePlay1();
-    cameraWork();
+
+    if (is3D)
+        cameraWork3D();
+    else
+        cameraWork2D();
 }
 
 function ballPhysics()
@@ -169,12 +192,20 @@ function ballPhysics()
     ballDirY = -ballSpeed * 2;
 }
 
-function cameraWork()
+function cameraWork3D()
 {
     camera.position.x = paddle1.position.x - 100;
     camera.position.z = paddle1.position.z + 100;
     camera.rotation.z = -90 * Math.PI/180;
     camera.rotation.y = -60 * Math.PI/180;
+}
+
+function cameraWork2D()
+{
+    camera.position.x = 0;
+    camera.position.z = 500;
+    camera.rotation.z = 0;
+    camera.rotation.y = 0;
 }
 
 function paddlePlay1()
