@@ -4,11 +4,16 @@
 var WIDTH = 640;
 var HEIGHT = 360;
 
+//modes
 var is3D = false;
 var multiPlay = true;
 
 //0 - easiest, 1 - hardest
-var difficulty = 0.2; 
+var difficulty = 0.2;
+
+//Scores
+var score1 = 0,
+score2 = 0;
 
 // create a WebGL renderer, camera and a scene
 var renderer = new THREE.WebGLRenderer();
@@ -196,11 +201,31 @@ function draw() {
 function ballPhysics()
 {
     //BALL BOUNCING
-    if (ball.position.y <= planeHeight/2) //Top side of table
+    if (ball.position.y <= -planeHeight/2) //Top side of table
         ballDirY = -ballDirY;
     if (ball.position.y >= planeHeight/2) //bottom side of table
         ballDirY = -ballDirY;
 
+    //Player 2 scores
+    if (ball.position.x <= -planeWidth/2)
+    {
+        //Player 2 scores a point
+        score2++;
+        //update scoreboard
+        document.getElementById("scores").innerHTML = score1 + "-" + score2;
+        //reset ball
+        //check if match is over
+    }
+    //Player 1 scores
+    if (ball.position.x >= planeWidth/2)
+    {
+        //Player 1 scores a point
+        //score1++;
+        //update scoreboard
+        document.getElementById("scores").innerHTML = score1 + "-" + score2;
+        //reset ball
+        //check if match is over
+    }
     ball.position.x += ballDirX * ballSpeed;
     ball.position.y += ballDirY * ballSpeed;
 
