@@ -214,16 +214,18 @@ function ballPhysics()
         //update scoreboard
         document.getElementById("scores").innerHTML = score1 + "-" + score2;
         //reset ball
+        resetBall(1);
         //check if match is over
     }
     //Player 1 scores
     if (ball.position.x >= planeWidth/2)
     {
         //Player 1 scores a point
-        //score1++;
+        score1++;
         //update scoreboard
         document.getElementById("scores").innerHTML = score1 + "-" + score2;
         //reset ball
+        resetBall(2);
         //check if match is over
     }
     ball.position.x += ballDirX * ballSpeed;
@@ -332,3 +334,30 @@ function botPlay()
     //strech paddle when hits the end of the table
     paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
 }
+
+function resetBall(loser)
+{
+    //ball in center
+    ball.position.x = 0;
+    ball.position.y = 0;
+
+    //player 1 lost point, ball goes to 2
+    if (loser == 1)
+        ballDirX = -1;
+    else //player 2 lost point, ball goes to 1
+        ballDirX = 1;
+    
+    ballDirY = 1;
+}
+/*
+function paddlesColision()
+{
+    //verification if the ball colides with de dimesions of the paddle
+    if (ball.position.x <= paddle1.position.x + paddleWidth 
+        && ball.position.x >= paddle1.position.x)
+    {
+        if (ball.position.y <= paddle1.position.y + paddleHeight/2
+            && ball.position.y >= paddle1.position
+        )
+    }
+}*/
