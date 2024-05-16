@@ -196,6 +196,8 @@ function draw() {
         cameraWork3D();
     else
         cameraWork2D();
+
+    paddlesColision();
 }
 
 function ballPhysics()
@@ -349,15 +351,43 @@ function resetBall(loser)
     
     ballDirY = 1;
 }
-/*
+
 function paddlesColision()
 {
-    //verification if the ball colides with de dimesions of the paddle
+    //verification if the ball colides with de dimesions of the paddle1
     if (ball.position.x <= paddle1.position.x + paddleWidth 
         && ball.position.x >= paddle1.position.x)
     {
         if (ball.position.y <= paddle1.position.y + paddleHeight/2
-            && ball.position.y >= paddle1.position
-        )
+            && ball.position.y >= paddle1.position.y - paddleHeight/2)
+        {
+            if (ballDirX < 0)
+            {
+                //strech paddle when hits
+                paddle1.scale.y = 15;
+                //bounce the ball
+                ballDirX = -ballDirX;
+                //adding angle to the bouncing
+                ballDirY -= paddle1DirY * 0.7;
+            }
+        }
     }
-}*/
+    //verification if the ball colides with de dimesions of the paddle2
+    if (ball.position.x <= paddle2.position.x + paddleWidth 
+        && ball.position.x >= paddle2.position.x)
+    {
+        if (ball.position.y <= paddle2.position.y + paddleHeight/2
+            && ball.position.y >= paddle2.position.y - paddleHeight/2)
+        {
+            if (ballDirX > 0)
+            {
+                //strech paddle when hits
+                paddle2.scale.y = 15;
+                //bounce the ball
+                ballDirX = -ballDirX;
+                //adding angle to the bouncing
+                ballDirY -= paddle2DirY * 0.7;
+            }
+        }
+    }
+}
