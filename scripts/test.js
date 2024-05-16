@@ -2,16 +2,16 @@
 var WIDTH = 640;
 var HEIGHT = 360;
 
-//modes
+// modes
 var is3D = false;
 var multiPlay = true;
 
-//0 - easiest, 1 - hardest
+// 0 - easiest, 1 - hardest
 var difficulty = 0.2;
 
-//Scores
+// Scores
 var score1 = 0,
-score2 = 0;
+    score2 = 0;
 
 // create a WebGL renderer, camera and a scene
 var renderer = new THREE.WebGLRenderer();
@@ -23,7 +23,7 @@ renderer.setSize(WIDTH, HEIGHT);
 var c = document.getElementById("gameCanvas");
 c.appendChild(renderer.domElement);
 
-var camera = new THREE.PerspectiveCamera(
+var camera1 = new THREE.PerspectiveCamera(
     45, // VIEW_ANGLE
     WIDTH / HEIGHT, // ASPECT
     0.1, // NEAR
@@ -35,12 +35,12 @@ var camera2 = new THREE.PerspectiveCamera(
     WIDTH / HEIGHT, // ASPECT
     0.1, // NEAR
     10000 // FAR
-)
+);
 
 var scene = new THREE.Scene();
 
-// set a default position for the camera
-camera.position.z = 500;
+// set a default position for the cameras
+camera1.position.z = 500;
 camera2.position.z = 500;
 
 // sphere
@@ -61,8 +61,8 @@ var ball = new THREE.Mesh(
 scene.add(ball);
 
 var ballDirX = 1,
-ballDirY = 1,
-ballSpeed = 2;
+    ballDirY = 1,
+    ballSpeed = 2;
 
 // POINT OF LIGHT
 var pointLight = new THREE.PointLight(0xF8D898);
@@ -114,7 +114,7 @@ var paddle2Material = new THREE.MeshLambertMaterial({
 });
 
 var paddle1 = new THREE.Mesh(
-    new THREE.CubeGeometry(
+    new THREE.BoxGeometry(
         paddleWidth,
         paddleHeight,
         paddleDepth,
@@ -128,7 +128,7 @@ var paddle1 = new THREE.Mesh(
 scene.add(paddle1);
 
 var paddle2 = new THREE.Mesh(
-    new THREE.CubeGeometry(
+    new THREE.BoxGeometry(
         paddleWidth,
         paddleHeight,
         paddleDepth,
@@ -149,8 +149,8 @@ paddle1.position.z = paddleDepth / 2;
 paddle2.position.z = paddleDepth / 2;
 
 var paddle1DirY = 0,
-paddle2DirY = 0,
-paddleSpeed = 3;
+    paddle2DirY = 0,
+    paddleSpeed = 3;
 
 function setup() {
     draw();
@@ -159,35 +159,42 @@ function setup() {
 var keyPressed = false;
 var multiPressed = false;
 
-function switchMode()
-{
-    if (Key.isDown(Key.SPACE) && !keyPressed)
-    {
+function switchMode() {
+    if (Key.isDown(Key.SPACE) && !keyPressed) {
         is3D = !is3D;
         keyPressed = true;
-    }
-    else if (!Key.isDown(Key.SPACE))
+    } else if (!Key.isDown(Key.SPACE)) {
         keyPressed = false;
+    }
 
-    if (Key.isDown(Key.M) && !multiPressed)
-    {
+    if (Key.isDown(Key.M) && !multiPressed) {
         multiPlay = !multiPlay;
         multiPressed = true;
-    }
-    else if (!Key.isDown(Key.M))
+    } else if (!Key.isDown(Key.M)) {
         multiPressed = false;
-
+    }
 }
 
 function draw() {
-    
     switchMode();
-    // draw THREE.JS scene
-    renderer.render(scene, camera);
+    renderer.setClearColor(0x000000, 1); // Define o fundo preto
+
+    if (is3D && multiPlay) {
+        // render for player 1
+        renderer.setViewport(0, 0, WIDTH / 2, HEIGHT);
+        renderer.render(scene, camera1);
+
+        // render for player 2
+        renderer.setViewport(WIDTH / 2, 0, WIDTH / 2, HEIGHT);
+        renderer.render(scene, camera2);
+    } else {
+        renderer.setViewport(0, 0, WIDTH, HEIGHT);
+        renderer.render(scene, camera1);
+    }
 
     // loop the draw() function
     requestAnimationFrame(draw);
-    
+
     ballPhysics();
     paddlePlay1();
     if (multiPlay)
@@ -195,103 +202,90 @@ function draw() {
     else
         botPlay();
 
-    if (is3D)
+    if (is3D) {
         cameraWork3D();
-    else
+    } else {
         cameraWork2D();
+    }
 
     paddlesColision();
 }
 
-function ballPhysics()
-{
-    //BALL BOUNCING
-    if (ball.position.y <= -planeHeight/2) //Top side of table
+function ballPhysics() {
+    // BALL BOUNCING
+    if (ball.position.y <= -planeHeight / 2) // Top side of table
         ballDirY = -ballDirY;
-    if (ball.position.y >= planeHeight/2) //bottom side of table
+    if (ball.position.y >= planeHeight / 2) // bottom side of table
         ballDirY = -ballDirY;
 
-    //Player 2 scores
-    if (ball.position.x <= -planeWidth/2)
-    {
-        //Player 2 scores a point
+    // Player 2 scores
+    if (ball.position.x <= -planeWidth / 2) {
+        // Player 2 scores a point
         score2++;
-        //update scoreboard
+        // update scoreboard
         document.getElementById("scores").innerHTML = score1 + "-" + score2;
-        //reset ball
+        // reset ball
         resetBall(1);
-        //check if match is over
+        // check if match is over
     }
-    //Player 1 scores
-    if (ball.position.x >= planeWidth/2)
-    {
-        //Player 1 scores a point
+    // Player 1 scores
+    if (ball.position.x >= planeWidth / 2) {
+        // Player 1 scores a point
         score1++;
-        //update scoreboard
+        // update scoreboard
         document.getElementById("scores").innerHTML = score1 + "-" + score2;
-        //reset ball
+        // reset ball
         resetBall(2);
-        //check if match is over
+        // check if match is over
     }
     ball.position.x += ballDirX * ballSpeed;
     ball.position.y += ballDirY * ballSpeed;
 
-    //BALL LIMITS
+    // BALL LIMITS
     if (ballDirY > ballSpeed * 2)
-    ballDirY = ballSpeed * 2;
+        ballDirY = ballSpeed * 2;
     else if (ballDirY < -ballSpeed * 2)
-    ballDirY = -ballSpeed * 2;
+        ballDirY = -ballSpeed * 2;
 }
-
-var lastHitByPlayer1 = true;
 
 function cameraWork3D() {
-    if (lastHitByPlayer1) {
-        camera.position.x = paddle2.position.x + 100;
-        camera.position.z = paddle2.position.z + 100;
-        camera.rotation.z = 90 * Math.PI / 180;
-        camera.rotation.y = 60 * Math.PI / 180;
-    } else {
-        camera.position.x = paddle1.position.x - 100;
-        camera.position.z = paddle1.position.z + 100;
-        camera.rotation.z = -90 * Math.PI / 180;
-        camera.rotation.y = -60 * Math.PI / 180;
-    }
+    camera1.position.x = paddle1.position.x - 100;
+    camera1.position.z = paddle1.position.z + 100;
+    camera1.rotation.z = -90 * Math.PI / 180;
+    camera1.rotation.y = -60 * Math.PI / 180;
+
+    camera2.position.x = paddle2.position.x + 100;
+    camera2.position.z = paddle2.position.z + 100;
+    camera2.rotation.z = 90 * Math.PI / 180;
+    camera2.rotation.y = 60 * Math.PI / 180;
 }
 
-function cameraWork2D()
-{
-    camera.position.x = 0;
-    camera.position.z = 500;
-    camera.rotation.z = 0;
-    camera.rotation.y = 0;
+function cameraWork2D() {
+    camera1.position.x = 0;
+    camera1.position.z = 500;
+    camera1.rotation.z = 0;
+    camera1.rotation.y = 0;
 }
 
-function paddlePlay1()
-{
-    //left
-    if (Key.isDown(Key.A))
-    {
-        if (paddle1.position.y < planeHeight * 0.45)//not touching the side of the table
+function paddlePlay1() {
+    // left
+    if (Key.isDown(Key.A)) {
+        if (paddle1.position.y < planeHeight * 0.45) // not touching the side of the table
             paddle1DirY = paddleSpeed * 0.5;
-        else
-        {
+        else {
             paddle1DirY = 0;
             paddle1.scale.z += (10 - paddle1.scale.z) * 0.2;
         }
     }
-    //right
-    else if (Key.isDown(Key.D))
-    {
-        if(paddle1.position.y > -planeHeight * 0.45)
+    // right
+    else if (Key.isDown(Key.D)) {
+        if (paddle1.position.y > -planeHeight * 0.45)
             paddle1DirY = -paddleSpeed * 0.5;
-        else
-        {
+        else {
             paddle1DirY = 0;
             paddle1.scale.z += (10 - paddle1.scale.z) * 0.2;
         }
-    }
-    else
+    } else
         paddle1DirY = 0;
 
     paddle1.scale.y += (1 - paddle1.scale.y) * 0.2;
@@ -299,31 +293,25 @@ function paddlePlay1()
     paddle1.position.y += paddle1DirY;
 }
 
-function paddlePlay2()
-{
-    //left
-    if (Key.isDown(Key.LEFT))
-    {
-        if (paddle2.position.y < planeHeight * 0.45)//not touching the side of the table
+function paddlePlay2() {
+    // left
+    if (Key.isDown(Key.LEFT)) {
+        if (paddle2.position.y < planeHeight * 0.45) // not touching the side of the table
             paddle2DirY = paddleSpeed * 0.5;
-        else
-        {
+        else {
             paddle2DirY = 0;
             paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
         }
     }
-    //right
-    else if (Key.isDown(Key.RIGHT))
-    {
-        if(paddle2.position.y > -planeHeight * 0.45)
+    // right
+    else if (Key.isDown(Key.RIGHT)) {
+        if (paddle2.position.y > -planeHeight * 0.45)
             paddle2DirY = -paddleSpeed * 0.5;
-        else
-        {
+        else {
             paddle2DirY = 0;
             paddle2.scale.z += (10 - paddle2.scale.z) * 0.2;
         }
-    }
-    else
+    } else
         paddle2DirY = 0;
 
     paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
@@ -331,76 +319,66 @@ function paddlePlay2()
     paddle2.position.y += paddle2DirY;
 }
 
-function botPlay()
-{
+function botPlay() {
     paddle2DirY = (ball.position.y - paddle2.position.y) * difficulty;
-    //speed limit
+    // speed limit
     if (Math.abs(paddle2DirY) <= paddleSpeed)
         paddle2.position.y += paddle2DirY;
-    else
-    {
+    else {
         if (paddle2DirY > paddleSpeed)
             paddle2.position.y += paddleSpeed;
         else if (paddle2DirY < -paddleSpeed)
             paddle2.position.y -= paddleSpeed;
     }
-    //strech paddle when hits the end of the table
+    // stretch paddle when hits the end of the table
     paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
 }
 
-function resetBall(loser)
-{
-    //ball in center
+function resetBall(loser) {
+    // ball in center
     ball.position.x = 0;
     ball.position.y = 0;
 
-    //player 1 lost point, ball goes to 2
+    // player 1 lost point, ball goes to 2
     if (loser == 1)
         ballDirX = -1;
-    else //player 2 lost point, ball goes to 1
+    else // player 2 lost point, ball goes to 1
         ballDirX = 1;
-    
+
     ballDirY = 1;
 }
 
-function paddlesColision()
-{
-    //verification if the ball colides with de dimesions of the paddle1
-    if (ball.position.x <= paddle1.position.x + paddleWidth 
-        && ball.position.x >= paddle1.position.x)
-    {
-        if (ball.position.y <= paddle1.position.y + paddleHeight/2
-            && ball.position.y >= paddle1.position.y - paddleHeight/2)
-        {
-            if (ballDirX < 0)
-            {
-                //strech paddle when hits
+function paddlesColision() {
+    // verification if the ball collides with the dimensions of paddle1
+    if (ball.position.x <= paddle1.position.x + paddleWidth &&
+        ball.position.x >= paddle1.position.x) {
+        if (ball.position.y <= paddle1.position.y + paddleHeight / 2 &&
+            ball.position.y >= paddle1.position.y - paddleHeight / 2) {
+            if (ballDirX < 0) {
+                // stretch paddle when hits
                 paddle1.scale.y = 15;
-                //bounce the ball
+                // bounce the ball
                 ballDirX = -ballDirX;
-                //adding angle to the bouncing
+                // adding angle to the bouncing
                 ballDirY -= paddle1DirY * 0.7;
-                lastHitByPlayer1 = true;
             }
         }
     }
-    //verification if the ball colides with de dimesions of the paddle2
-    if (ball.position.x <= paddle2.position.x + paddleWidth 
-        && ball.position.x >= paddle2.position.x)
-    {
-        if (ball.position.y <= paddle2.position.y + paddleHeight/2
-            && ball.position.y >= paddle2.position.y - paddleHeight/2)
-        {
-            if (ballDirX > 0)
-            {
-                //strech paddle when hits
+    // verification if the ball collides with the dimensions of paddle2
+    if (ball.position.x <= paddle2.position.x + paddleWidth &&
+        ball.position.x >= paddle2.position.x) {
+        if (ball.position.y <= paddle2.position.y + paddleHeight / 2 &&
+            ball.position.y >= paddle2.position.y - paddleHeight / 2) {
+            if (ballDirX > 0) {
+                // stretch paddle when hits
                 paddle2.scale.y = 15;
-                //bounce the ball
+                // bounce the ball
                 ballDirX = -ballDirX;
-                //adding angle to the bouncing
+                // adding angle to the bouncing
                 ballDirY -= paddle2DirY * 0.7;
-                lastHitByPlayer1 = false;
             }
         }
     }
 }
+
+setup();
