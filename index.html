@@ -5,12 +5,13 @@
         <style>
             body {
                 background-color: black;
+                text-align: center;
+                margin: 0; /* Remove as margens padrão */
+                padding: 0; /* Remove o preenchimento padrão */
             }
             #gameCanvas {
                 background-color: black;
-                width: 640px;
-                height: 360px;
-                margin: auto;
+                display: inline-block; /* Adiciona esta linha para centralizar corretamente */
                 align: center;
             }
             #scoreboard {
@@ -22,7 +23,7 @@
                 font-size:600%;
                 padding:0;
                 margin:0;
-                color:white
+                color:white;
             }
             #title {
                 background-color: white;
@@ -32,9 +33,9 @@
     </head>
     <body onload='setup();'>
         <div id='gameCanvas'></div>
-        <script src='./scripts/three.min.js'></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
         <script src='./scripts/keyboard.js'></script>
-        <script src='./scripts/game.js'></script>
+        <script src='./scripts/gameDouble.js'></script>
         <div id="scoreboard">
             <h1 id="scores">0-0</h1>
             <h1 id="title">3D PONG</h1>
