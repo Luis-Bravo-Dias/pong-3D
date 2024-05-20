@@ -1,6 +1,5 @@
-// Calcula a posição inicial da câmera para centralizar a cena
-var initialCameraX = 0; // Mantém a câmera no centro da cena
-var initialCameraY = 0; // Mantém a câmera no centro da cena
+var initialCameraX = 0;
+var initialCameraY = 0;
 
 // set the scene size
 var WIDTH = 640 + 300;
@@ -89,9 +88,9 @@ var planeWidth = 640,
     planeHeight = 360,
     planeQuality = 15;
 
-var planeMaterial = new THREE.MeshLambertMaterial({
-    color: 0x4BD121,
-    wireframe: true
+var planeMaterial = new THREE.MeshBasicMaterial({
+    map: new THREE.TextureLoader().load('../imgs/fields/basicField.jpg'), 
+    side: THREE.DoubleSide
 });
 
 var plane = new THREE.Mesh(
@@ -182,8 +181,68 @@ function switchMode() {
         multiPressed = false;
 }
 
+var SHIFTPressed = false;
+var fieldOp = 0;
+
+function changeField() {
+    if (Key.isDown(Key.SHIFT) && !SHIFTPressed) {
+        fieldOp++;
+        SHIFTPressed = true;
+    } else if (!Key.isDown(Key.SHIFT)) {
+        SHIFTPressed = false;
+    }
+
+    if (fieldOp < 0 || fieldOp > 3)
+        fieldOp = 0;
+    
+    var loader = new THREE.TextureLoader();
+    switch (fieldOp) {
+        case 0:
+            var newMaterial = new THREE.MeshLambertMaterial({
+                color: 0x4BD121,
+                wireframe: true
+            });
+            plane.material = newMaterial;
+            break;
+        case 1:
+            loader.load('../imgs/fields/basicField.jpg', function(texture) {
+                var newMaterial = new THREE.MeshBasicMaterial({
+                    map: texture, 
+                    side: THREE.DoubleSide
+                });
+                plane.material = newMaterial;
+            }, undefined, function(err) {
+                console.error('Error loding texture basicField.jpg', err);
+            });
+            break;
+        case 2:
+            loader.load('../imgs/fields/comunCourse.jpg', function(texture) {
+                var newMaterial = new THREE.MeshBasicMaterial({
+                    map: texture, 
+                    side: THREE.DoubleSide
+                });
+                plane.material = newMaterial;
+            }, undefined, function(err) {
+                console.error('Error loding texture comunCourse.jpg', err);
+            });
+            break;
+        case 3:
+            loader.load('../imgs/fields/pong42.jpg', function(texture) {
+                var newMaterial = new THREE.MeshBasicMaterial({
+                    map: texture, 
+                    side: THREE.DoubleSide
+                });
+                plane.material = newMaterial;
+            }, undefined, function(err) {
+                console.error('Error loding texture pong42.jpg', err);
+            });
+            break;
+    }
+}
+
 function draw() {
     switchMode();
+    changeField();
 
     // double view
     if (is3D && multiPlay) {
@@ -227,9 +286,9 @@ function draw() {
 
 function ballPhysics() {
     //BALL BOUNCING
-    if (ball.position.y <= -planeHeight / 2) //Top side of table
+    if (ball.position.y <= -planeHeight / 2) //Top side of SHIFTle
         ballDirY = -ballDirY;
-    if (ball.position.y >= planeHeight / 2) //bottom side of table
+    if (ball.position.y >= planeHeight / 2) //bottom side of SHIFTle
         ballDirY = -ballDirY;
 
     //Player 2 scores
@@ -291,7 +350,7 @@ function cameraWork2D() {
 function paddlePlay1() {
     //left
     if (Key.isDown(Key.A)) {
-        if (paddle1.position.y < planeHeight * 0.45) //not touching the side of the table
+        if (paddle1.position.y < planeHeight * 0.45) //not touching the side of the SHIFTle
             paddle1DirY = paddleSpeed * 0.5;
         else {
             paddle1DirY = 0;
@@ -317,7 +376,7 @@ function paddlePlay1() {
 function paddlePlay2() {
     //left
     if (Key.isDown(Key.RIGHT)) {
-        if (paddle2.position.y < planeHeight * 0.45) //not touching the side of the table
+        if (paddle2.position.y < planeHeight * 0.45) //not touching the side of the SHIFTle
             paddle2DirY = paddleSpeed * 0.5;
         else {
             paddle2DirY = 0;
@@ -351,7 +410,7 @@ function botPlay() {
         else if (paddle2DirY < -paddleSpeed)
             paddle2.position.y -= paddleSpeed;
     }
-    //strech paddle when hits the end of the table
+    //strech paddle when hits the end of the SHIFTle
     paddle2.scale.y += (1 - paddle2.scale.y) * 0.2;
 }
 

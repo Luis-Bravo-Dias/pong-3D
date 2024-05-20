@@ -176,12 +176,71 @@ function switchMode()
     }
     else if (!Key.isDown(Key.M))
         multiPressed = false;
+}
 
+var SHIFTPressed = false;
+var fieldOp = 0;
+
+function changeField() {
+    if (Key.isDown(Key.SHIFT) && !SHIFTPressed) {
+        fieldOp++;
+        SHIFTPressed = true;
+    } else if (!Key.isDown(Key.SHIFT)) {
+        SHIFTPressed = false;
+    }
+
+    if (fieldOp < 0 || fieldOp > 3)
+        fieldOp = 0;
+    
+    var loader = new THREE.TextureLoader();
+    switch (fieldOp) {
+        case 0:
+            var newMaterial = new THREE.MeshLambertMaterial({
+                color: 0x4BD121,
+                wireframe: true
+            });
+            plane.material = newMaterial;
+            break;
+        case 1:
+            loader.load('../imgs/fields/basicField.jpg', function(texture) {
+                var newMaterial = new THREE.MeshBasicMaterial({
+                    map: texture, 
+                    side: THREE.DoubleSide
+                });
+                plane.material = newMaterial;
+            }, undefined, function(err) {
+                console.error('Error loding texture basicField.jpg', err);
+            });
+            break;
+        case 2:
+            loader.load('../imgs/fields/comunCourse.jpg', function(texture) {
+                var newMaterial = new THREE.MeshBasicMaterial({
+                    map: texture, 
+                    side: THREE.DoubleSide
+                });
+                plane.material = newMaterial;
+            }, undefined, function(err) {
+                console.error('Error loding texture comunCourse.jpg', err);
+            });
+            break;
+        case 3:
+            loader.load('../imgs/fields/pong42.jpg', function(texture) {
+                var newMaterial = new THREE.MeshBasicMaterial({
+                    map: texture, 
+                    side: THREE.DoubleSide
+                });
+                plane.material = newMaterial;
+            }, undefined, function(err) {
+                console.error('Error loding texture pong42.jpg', err);
+            });
+            break;
+    }
 }
 
 function draw() {
     
     switchMode();
+    changeField();
     // draw THREE.JS scene
     renderer.render(scene, camera);
 
