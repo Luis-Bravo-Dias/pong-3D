@@ -13,6 +13,7 @@ var Key = {
   RIGHT: 39,
   LEFT: 37,
   SHIFT: 16,
+  H: 72,
 
   isDown: function(keyCode) {
     return this._pressed[keyCode];

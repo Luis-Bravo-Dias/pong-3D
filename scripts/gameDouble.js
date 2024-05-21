@@ -8,6 +8,7 @@ var HEIGHT = 360 + 0;
 //modes
 var is3D = false;
 var multiPlay = true;
+var hazardMode = false;
 
 //0 - easiest, 1 - hardest
 var difficulty = 0.2;
@@ -161,12 +162,43 @@ var paddle1DirY = 0,
     paddle2DirY = 0,
     paddleSpeed = 3;
 
+//HAZARD
+var hazardWidth = 20,
+    hazardHeight = 60,
+    hazardDepth = 10,
+    hazardQuality = 1;
+
+var hazardMaterial = new THREE.MeshLambertMaterial({
+    color: 0xF333FF,
+    wireframe: false
+});
+
+var hazardBlock = new THREE.Mesh(
+    new THREE.BoxGeometry(
+        hazardWidth,
+        hazardHeight,
+        hazardDepth,
+        hazardQuality,
+        hazardQuality,
+        hazardQuality
+    ),
+    hazardMaterial
+);
+
+//scene.add(hazardBlock);
+
+hazardBlock.position.y = planeHeight/2;
+
+var hazardSpeed = 3,
+    hazardDir = 1;
+
 function setup() {
     draw();
 }
 
 var keyPressed = false;
 var multiPressed = false;
+var hazardPressed = false;
 
 function switchMode() {
     if (Key.isDown(Key.SPACE) && !keyPressed) {
@@ -180,6 +212,12 @@ function switchMode() {
         multiPressed = true;
     } else if (!Key.isDown(Key.M))
         multiPressed = false;
+
+    if (Key.isDown(Key.H) && !multiPressed) {
+        hazardMode = !hazardMode;
+        hazardPressed = true;
+    } else if (!Key.isDown(Key.H))
+        hazardPressed = false;
 }
 
 var SHIFTPressed = false;
@@ -283,13 +321,26 @@ function draw() {
         cameraWork2D();
 
     paddlesColision();
+    if (hazardMode)
+        hazardStart();
+    else
+        scene.remove(hazardBlock);
+}
+
+function hazardStart()
+{
+        if ((score1 >= 4 || score2 >= 4) && hazardMode)
+            scene.add(hazardBlock);
+        hazardColision();
+        checkScoreForHazard();
+        hazardMove();
 }
 
 function ballPhysics() {
     //BALL BOUNCING
-    if (ball.position.y <= -planeHeight / 2) //Top side of SHIFTle
+    if (ball.position.y <= -planeHeight / 2) //Top side of tablele
         ballDirY = -ballDirY;
-    if (ball.position.y >= planeHeight / 2) //bottom side of SHIFTle
+    if (ball.position.y >= planeHeight / 2) //bottom side of tablele
         ballDirY = -ballDirY;
 
     //Player 2 scores
@@ -486,6 +537,31 @@ function matchScoreCheck()
     }
 }
 
-setup();
+function hazardColision() {
+    // Verify colision
+    if (ball.position.x <= hazardBlock.position.x + hazardWidth / 2 &&
+        ball.position.x >= hazardBlock.position.x - hazardWidth / 2) {
+        if (ball.position.y <= hazardBlock.position.y + hazardHeight / 2 &&
+            ball.position.y >= hazardBlock.position.y - hazardHeight / 2) {
+            // bounce the ball;
+            ballDirX = -ballDirX;
+        }
+    }
+}
 
+function hazardMove()
+{
+    if (hazardBlock.position.y >= planeWidth / 2 - hazardWidth / 2) {
+        hazardDir = -1;
+    } else if (hazardBlock.position.y <= -planeWidth / 2 + hazardWidth / 2) {
+        hazardDir = 1;
+    }
+    hazardBlock.position.y += hazardSpeed * hazardDir;
+}
 
+function checkScoreForHazard() {
+
+    if (score1 >= 5 || score2 >= 5) {
+        hazardSpeed = 5;
+    }
+}

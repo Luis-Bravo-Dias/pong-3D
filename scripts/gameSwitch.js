@@ -5,6 +5,7 @@ var HEIGHT = 360;
 //modes
 var is3D = false;
 var multiPlay = true;
+var hazardMode = false;
 
 //0 - easiest, 1 - hardest
 var difficulty = 0.2;
@@ -153,6 +154,36 @@ var paddle1DirY = 0,
 paddle2DirY = 0,
 paddleSpeed = 3;
 
+//HAZARD
+var hazardWidth = 20,
+    hazardHeight = 60,
+    hazardDepth = 10,
+    hazardQuality = 1;
+
+var hazardMaterial = new THREE.MeshLambertMaterial({
+    color: 0xF333FF,
+    wireframe: false
+});
+
+var hazardBlock = new THREE.Mesh(
+    new THREE.BoxGeometry(
+        hazardWidth,
+        hazardHeight,
+        hazardDepth,
+        hazardQuality,
+        hazardQuality,
+        hazardQuality
+    ),
+    hazardMaterial
+);
+
+//scene.add(hazardBlock);
+
+hazardBlock.position.y = planeHeight/2;
+
+var hazardSpeed = 3,
+    hazardDir = 1;
+
 function setup() {
     draw();
 }
@@ -261,6 +292,20 @@ function draw() {
         cameraWork2D();
 
     paddlesColision();
+
+    if (hazardMode)
+        hazardStart();
+    else
+        scene.remove(hazardBlock);
+}
+
+function hazardStart()
+{
+        if ((score1 >= 4 || score2 >= 4) && hazardMode)
+            scene.add(hazardBlock);
+        hazardColision();
+        checkScoreForHazard();
+        hazardMove();
 }
 
 function ballPhysics()
@@ -484,5 +529,34 @@ function matchScoreCheck()
         //write to banner
         document.getElementById("scores").innerHTML = "Player 2 wins!";
         document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
+    }
+}
+
+function hazardColision() {
+    // Verify colision
+    if (ball.position.x <= hazardBlock.position.x + hazardWidth / 2 &&
+        ball.position.x >= hazardBlock.position.x - hazardWidth / 2) {
+        if (ball.position.y <= hazardBlock.position.y + hazardHeight / 2 &&
+            ball.position.y >= hazardBlock.position.y - hazardHeight / 2) {
+            // bounce the ball;
+            ballDirX = -ballDirX;
+        }
+    }
+}
+
+function hazardMove()
+{
+    if (hazardBlock.position.y >= planeWidth / 2 - hazardWidth / 2) {
+        hazardDir = -1;
+    } else if (hazardBlock.position.y <= -planeWidth / 2 + hazardWidth / 2) {
+        hazardDir = 1;
+    }
+    hazardBlock.position.y += hazardSpeed * hazardDir;
+}
+
+function checkScoreForHazard() {
+
+    if (score1 >= 5 || score2 >= 5) {
+        hazardSpeed = 5;
     }
 }
