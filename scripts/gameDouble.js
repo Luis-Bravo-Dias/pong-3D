@@ -14,7 +14,8 @@ var difficulty = 0.2;
 
 //Scores
 var score1 = 0,
-    score2 = 0;
+    score2 = 0,
+    maxScore = 7;
 
 // create a WebGL renderer, camera and a scene
 var renderer = new THREE.WebGLRenderer();
@@ -300,6 +301,7 @@ function ballPhysics() {
         //reset ball
         resetBall(1);
         //check if match is over
+        matchScoreCheck();
     }
     //Player 1 scores
     if (ball.position.x >= planeWidth / 2) {
@@ -310,6 +312,7 @@ function ballPhysics() {
         //reset ball
         resetBall(2);
         //check if match is over
+        matchScoreCheck();
     }
     ball.position.x += ballDirX * ballSpeed;
     ball.position.y += ballDirY * ballSpeed;
@@ -460,6 +463,26 @@ function paddlesColision() {
                 lastHitByPlayer1 = false;
             }
         }
+    }
+}
+
+function matchScoreCheck()
+{
+    if (score1 >= maxScore)
+    {
+        //stop ball
+        ballSpeed = 0;
+        //write to banner
+        document.getElementById("scores").innerHTML = "Player 1 wins!";
+        document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
+    }
+    else if (score2 >= maxScore)
+    {
+        //stop ball
+        ballSpeed = 0;
+        //write to banner
+        document.getElementById("scores").innerHTML = "Player 2 wins!";
+        document.getElementById("winnerBoard").innerHTML = "Refresh to play again";
     }
 }
 
