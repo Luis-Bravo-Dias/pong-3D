@@ -7,7 +7,7 @@ var HEIGHT = 360 + 0;
 
 //modes
 var is3D = false;
-var multiPlay = true;
+var multiPlay = false;
 var hazardMode = false;
 
 //0 - easiest, 1 - hardest
@@ -193,7 +193,6 @@ var hazardSpeed = 3,
     hazardDir = 1;
 
 function setup() {
-    draw();
 }
 
 var keyPressed = false;
@@ -213,7 +212,7 @@ function switchMode() {
     } else if (!Key.isDown(Key.M))
         multiPressed = false;
 
-    if (Key.isDown(Key.H) && !multiPressed) {
+    if (Key.isDown(Key.H) && !hazardPressed) {
         hazardMode = !hazardMode;
         hazardPressed = true;
     } else if (!Key.isDown(Key.H))
@@ -279,8 +278,23 @@ function changeField() {
     }
 }
 
+function startGame() {
+    // Obtenha os valores dos checkboxes
+    is3D = document.getElementById("3DMode").checked;
+    multiPlay = document.getElementById("multiPlayMode").checked;
+    hazardMode = document.getElementById("hazardMode").checked;
+
+    // Ocultar o menu e mostrar o jogo
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('gameCanvas').style.display = 'block';
+    document.getElementById('scoreboard').style.display = 'block';
+
+    // Iniciar o jogo
+    draw();
+}
+
 function draw() {
-    switchMode();
+    //switchMode();
     changeField();
 
     // double view
@@ -330,8 +344,10 @@ function draw() {
 function hazardStart()
 {
         if ((score1 >= 4 || score2 >= 4) && hazardMode)
+        {
             scene.add(hazardBlock);
-        hazardColision();
+            hazardColision();
+        }
         checkScoreForHazard();
         hazardMove();
 }
