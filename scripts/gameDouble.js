@@ -11,7 +11,7 @@ var multiPlay = false;
 var hazardMode = false;
 
 //0 - easiest, 1 - hardest
-var difficulty = 0.2;
+var difficulty = 0.1;
 
 //Scores
 var score1 = 0,
@@ -59,7 +59,7 @@ var radius = 10,
     rings = 6;
 
 var sphereMaterial = new THREE.MeshLambertMaterial({
-    color: 0xD43001,
+    color: 0xF1FFF5,
     wireframe: false
 });
 
@@ -72,7 +72,7 @@ scene.add(ball);
 
 var ballDirX = 1,
     ballDirY = 1,
-    ballSpeed = 1.5;
+    ballSpeed = 2;
 
 // POINT OF LIGHT
 var pointLight = new THREE.PointLight(0xF8D898);
@@ -104,6 +104,8 @@ var plane = new THREE.Mesh(
     ),
     planeMaterial
 );
+
+plane.position.z = -10;
 
 scene.add(plane);
 
@@ -164,8 +166,8 @@ var paddle1DirY = 0,
 
 //HAZARD
 var hazardWidth = 20,
-    hazardHeight = 60,
-    hazardDepth = 10,
+    hazardHeight = 150,
+    hazardDepth = 100,
     hazardQuality = 1;
 
 var hazardMaterial = new THREE.MeshLambertMaterial({
@@ -279,17 +281,17 @@ function changeField() {
 }
 
 function startGame() {
-    // Obtenha os valores dos checkboxes
+    //checkbox values
     is3D = document.getElementById("3DMode").checked;
     multiPlay = document.getElementById("multiPlayMode").checked;
     hazardMode = document.getElementById("hazardMode").checked;
 
-    // Ocultar o menu e mostrar o jogo
+    // hides menus
     document.getElementById('menu').style.display = 'none';
     document.getElementById('gameCanvas').style.display = 'block';
     document.getElementById('scoreboard').style.display = 'block';
 
-    // Iniciar o jogo
+    // start game
     draw();
 }
 
@@ -559,6 +561,18 @@ function hazardColision() {
         ball.position.x >= hazardBlock.position.x - hazardWidth / 2) {
         if (ball.position.y <= hazardBlock.position.y + hazardHeight / 2 &&
             ball.position.y >= hazardBlock.position.y - hazardHeight / 2) {
+            // bounce the ball;
+            ballDirX = -ballDirX;
+        }
+    }
+}
+
+function hazard2Colision() {
+    // Verify colision
+    if (ball.position.x <= hazard2.position.x + hazard2Width / 2 &&
+        ball.position.x >= hazard2.position.x - hazard2Width / 2) {
+        if (ball.position.y <= hazard2.position.y + hazard2Height / 2 &&
+            ball.position.y >= hazard2.position.y - hazard2Height / 2) {
             // bounce the ball;
             ballDirX = -ballDirX;
         }
