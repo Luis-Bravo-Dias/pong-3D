@@ -296,7 +296,7 @@ function startGame() {
 }
 
 function draw() {
-    //switchMode();
+    switchMode();
     changeField();
 
     // double view
